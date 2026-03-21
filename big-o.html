@@ -18,52 +18,52 @@
   <body>
     <article>
       <section>
-        <h2>So what exactly is \( \Omicron \)?</h2>
+        <h2>What exactly is \( \mathcal{O} \)?</h2>
         <p>
-          I've always disliked how handwavy \( \Omicron \) tends to be,
-          especially amongst programmers<label
-            for="sn-extensive-use-of-sidenotes"
-            class="margin-toggle sidenote-number"
-          ></label
-          ><input
-            type="checkbox"
-            id="sn-extensive-use-of-sidenotes"
-            class="margin-toggle"
-          /><span class="sidenote">This is a sidenote.</span>. Some common
-          handwavy statements you might hear include:
+          \( \mathcal{O} \) is a rather mysterious concept, especially in
+          software: unsurprising given that \( \mathcal{O} \) originated from
+          number theory (Bachmann 1894 CIT) and was only later popularized by
+          Knuth in the 1970s (CIT). Some common statements you might hear
+          include:
         </p>
         <ul>
-          <li>Sorting is \( \Omicron(n \log n) \).</li>
-          <li>\( \Omicron(1) \) means constant time algorithms.</li>
-          <li>\( \Omicron \) represents how long an algorithm takes to run.</li>
+          <li>\( \mathcal{O}(1) \) means constant time algorithms.</li>
+          <li>Sorting is \( \mathcal{O}(n \log n) \)</li>
+          <li>Attention is \( \mathcal{O}(n^2) \) memory.</li>
           <li>
-            \( \Omicron \) represents the rate of growth between the time of an
-            algorithm and the input size.
+            \( \mathcal{O} \) represents how long an algorithm takes to run.
           </li>
           <li>
-            \( \Omicron \) represents an upper bound on how fast an algorithm
+            \( \mathcal{O} \) represents the rate of growth of the time of an
+            algorithm.
+          </li>
+          <li>
+            \( \mathcal{O} \) represents an upper bound on how fast an algorithm
             can be.
           </li>
         </ul>
 
-        <p>
-          None of these are <i>wrong</i> per se, but many questions arise kj:
-        </p>
+        <p>None of these are <i>wrong</i> per se, but many questions arise:</p>
         <ul>
           <li>What does the \( n \) mean above?</li>
+          <li>
+            What exactly does the \( \mathcal{O} \) tell me and what does it
+            not?
+          </li>
           <li>What is the base for the \( \log \) and does that matter?</li>
           <li>
-            What is the connection between the expressions \( n \log n \) and
-            algorithms?
+            What is the connection between the expression \( n \log n \) or \(
+            n^2 \) and the algorithms?
           </li>
           <li>
-            What is the relation between \( \Omicron \) and worst case analysis?
+            What is the relation between \( \mathcal{O} \) and worst case
+            analysis?
           </li>
           <li>What is the assumed computation model and does that matter?</li>
         </ul>
         <p>
           The goal here is to end with a clear and precise understanding of \(
-          \Omicron \) and what people precisely mean when we bring it up.
+          \mathcal{O} \) and what people precisely mean when we bring it up.
           Before, we bridge our understanding though, we have to lay some
           foundations.
         </p>
@@ -77,61 +77,64 @@
         </p>
         <div class="definition">
           <span class="env-name"
-            >(\( \Omicron \) of real-valued functions with 1 argument).</span
+            >(\( \mathcal{O} \) of real-valued functions with 1 argument).</span
           >
           <p>
-            \( \Omicron: F \rightarrow 2^F \) is the set-valued function defined
-            by \[ \Omicron(f) = \left\{g \in F \mid \exists C \in \mathbb{R}_{>
-            0}, N \in \mathbb{R}, \left\lvert g(x) \right\rvert \le C
-            \left\lvert f(x) \right\rvert \forall x \ge N \right\}. \]
+            For \( f \in F \), \( \mathcal{O}: F \rightarrow 2^F \) is the
+            set-valued function defined by \[ \mathcal{O}(f) = \left\{g \in F
+            \mid \exists C \in \mathbb{R}_{> 0}, N \in \mathbb{R}, \left\lvert
+            g(x) \right\rvert \le C \left\lvert f(x) \right\rvert \forall x \ge
+            N \right\}. \]
           </p>
         </div>
         <p>Some things to note immediately:</p>
         <ol>
           <li>
             Only the the eventual behavior of the function matters for \(
-            \Omicron \) - the behavior at some finite number of specific points
-            does not.
+            \mathcal{O} \) - the behavior at any finite number of points does
+            not.
           </li>
           <li>
-            There is no mention of "cases" here, meaning \( \Omicron \) is
+            There is no mention of "cases" here, meaning \( \mathcal{O} \) is
             orthogonal to worse case or average case analysis. The correct
-            viewpoint here is to view \( \Omicron \) as <b>sets</b> or
-            <b>classes</b>
+            viewpoint here is to view \( \mathcal{O} \) as <b>sets</b>
             of functions.
+          </li>
+          <li>
+            \( \mathcal{O} \) captures eventual dominance up to a constant \( C
+            \).
           </li>
         </ol>
         <div class="example">
           <span class="env-name"></span>
           <p>
-            Let \( f(x) = x \) and \( g(x) = x^2 \). Then, \( f \in \Omicron(g)
-            . \)
+            Let \( f(x) = x \) and \( g(x) = x^2 \). Then, \( f \in
+            \mathcal{O}(g) . \)
           </p>
         </div>
         <div class="proof">
           <span class="env-name"></span>
           <p>
-            Notice that \( \forall x \ge 1 \), both \( x^2 \) and \( x \) are
-            positive, and so \( \left\lvert x \right\rvert \le 1 \cdot
-            \left\lvert x^2 \right\rvert \).
+            Notice that \( \forall x \ge 1 \), we have \( \left\lvert x
+            \right\rvert \le 1 \cdot \left\lvert x^2 \right\rvert \).
           </p>
         </div>
         <div class="example">
           <span class="env-name">(Eventually \( 0 \) functions)</span>
           <p>
             \( \forall f \in F \) that is eventually \( 0 \), we have \( f \in
-            \Omicron(g) \forall g \in F \).
+            \mathcal{O}(g) \forall g \in F \).
             <br />
             \( \forall f \in F \) that is eventually \( 0 \), we have \(
-            \Omicron(f) = \{ g \in \Omicron \mid g \text{ is eventually } 0\} =
-            \Omicron(0) \).
+            \mathcal{O}(f) = \{ g \in \mathcal{O} \mid g \text{ is eventually }
+            0\} = \mathcal{O}(0) \).
           </p>
         </div>
         <div class="example">
           <span class="env-name"></span>
           <p>
             Let \( f(x) = 1 \) and \( g(x) = \left\lvert \sin(x) \right\rvert +
-            1 \). Then, \( \Omicron(f) = \Omicron(g) \).
+            1 \). Then, \( \mathcal{O}(f) = \mathcal{O}(g) \).
           </p>
         </div>
         <div class="example">
@@ -140,27 +143,36 @@
           >
           <p>
             \( \forall f \in F \) that is eventually bounded and bounded away
-            from zero, we have \( f \in \Omicron(1) \).
+            from zero, we have \( f \in \mathcal{O}(1) \).
           </p>
         </div>
         <div class="proposition">
           <span class="env-name"></span>
           <p>
             \[ \left\lvert f \right\rvert \le \left\lvert g \right\rvert \text{
-            eventually } \Rightarrow f \in \Omicron(g)) \]
+            eventually } \Rightarrow f \in \mathcal{O}(g)) \]
           </p>
         </div>
         <p>
-          \( \Omicron \) essentially captures eventual dominance up to a
-          constant. Dominance is captured via set inclusion of which eventually
-          \( 0 \) functions are at the bottom. We can form chains of dominance
-          based on \( \Omicron \) such as
+          Dominance can be captured via set inclusion of which eventually \( 0
+          \) functions are at the bottom. We can form chains of dominance based
+          on \( \mathcal{O} \) such as:
         </p>
+        <div class="example">
+          <span class="env-name"></span>
+          <p>
+            \[ \mathcal{O}(0) \subseteq \mathcal{O}(1) \subseteq \mathcal{O}(x
+            \mapsto \log x) \subseteq \mathcal{O}(x \mapsto x) \subseteq
+            \mathcal{O}(x \mapsto x \log x) \subseteq \mathcal{O}(x \mapsto x^2)
+            \subseteq \mathcal{O}(x \mapsto e^x) \cdots \]
+          </p>
+        </div>
+
         <p>
-          Notice here that we may have some unknown function \( f \) whos growth
-          may be some disgusting step function with many strange terms, but as
-          long as we can eventually bound below a known function \( g \), then
-          we know \( f \in \mathcal{O}(g) \).<label
+          Notice here that we may have some unknown function \( f \) whos may be
+          some disgusting step function with many strange terms, but as long as
+          we can eventually bound below a known function \( g \) up to a
+          constant, then we know \( f \in \mathcal{O}(g) \).<label
             for="sn-extensive-use-of-sidenotes"
             class="margin-toggle sidenote-number"
           ></label
@@ -178,35 +190,27 @@
           any sense yet; however, worst case analysis may be a technique used to
           determine an upper bound.
         </p>
-        <div class="example">
-          <p>
-            \[ \Omicron(0) \subseteq \Omicron(1) \subseteq \Omicron(x \mapsto
-            \log x) \subseteq \Omicron(x \mapsto x) \subseteq \Omicron(x \mapsto
-            x \log x) \subseteq \Omicron(x \mapsto x^2) \subseteq \Omicron(x
-            \mapsto e^x) \cdots \]
-          </p>
-        </div>
-
         <p>
-          Now let's investigate the structure of \( \Omicron \) in more detail.
+          Now let's investigate the structure of \( \mathcal{O} \) in more
+          detail.
         </p>
         <div class="proposition">
           <span class="env-name"></span>
           <p>
-            \[ \forall f, g \in F, f \in \Omicron(g) \Leftrightarrow \Omicron(f)
-            \subseteq \Omicron(g) \]
+            \[ \forall f, g \in F, f \in \mathcal{O}(g) \Leftrightarrow
+            \mathcal{O}(f) \subseteq \mathcal{O}(g) \]
           </p>
         </div>
         <p>
-          Let \( \mathcal{P} = \{\Omicron(f) \mid f \in F\} \) be the family of
-          all possible \( \Omicron \) classes. Then, \( \mathcal{P} \) is a
-          poset with set inclusion with a minimum. Define addition as join
+          Let \( \mathcal{P} = \{\mathcal{O}(f) \mid f \in F\} \) be the family
+          of all possible \( \mathcal{O} \) classes. Then, \( \mathcal{P} \) is
+          a poset with set inclusion with a minimum. Define addition as join
           operator.
         </p>
         <div class="proposition">
-          <span class="env-name">\( \Omicron(f) \) forms a monoid </span>
+          <span class="env-name">\( \mathcal{O}(f) \) forms a monoid </span>
           <!-- TODO: closure under multiplying by constant like in a module structure -->
-          <p>\[ \forall f \in F, a \in \mathbb{R}, af \in \Omicron(f)\]</p>
+          <p>\[ \forall f \in F, a \in \mathbb{R}, af \in \mathcal{O}(f)\]</p>
         </div>
         <div class="proof">
           <span class="env-name"></span>
@@ -220,18 +224,35 @@
           <p></p>
         </div>
         <div class="proposition">
-          <span class="env-name">\( \Omicron \) forms an equivalence relation on \( F \)</span>
+          <span class="env-name"
+                    >\( \mathcal{O} \) forms an equivalence relation \( \sim_\mathcal{O} \) on \( F \) by \( f \sim_\mathcal{O} g \) if \( f \in \mathcal{O}(g) \)</span
+          >
           <p></p>
         </div>
+        <div class="proof">
+          <span class="env-name"></span>
+          <p>
+                        Take \( f, g, h \in F \).
+                    <ol>
+                        <li>
+                            \( f \sim_\mathcal{O} (f) \): take the witness \( C = 1 \).
+                        </li>
+                        <li>
+                            \( f \sim_\mathcal{O} g \Rightarrow g \sim_\mathcal{O} f \): if \( f \sim_\mathcal{O} g \) holds with the witness \( C \), then \( g \im_\mathcal{O} f \) with the witness \( \frac{1}{C} \).
+                        </li>
+                    </ol>
+
+          </p>
+        </div>
         <p>TODO: BUT HOW BIG IS \( \mathcal{P} \)</p>
-                <!-- https://math.stackexchange.com/questions/2436701/how-many-big-o-equivalence-classes-are-there -->
+        <!-- https://math.stackexchange.com/questions/2436701/how-many-big-o-equivalence-classes-are-there -->
         <!-- https://en.wikipedia.org/wiki/Join_and_meet -->
         <!-- https://en.wikipedia.org/wiki/Ideal_(order_theory) -->
         <!-- https://en.wikipedia.org/wiki/Partially_ordered_set -->
         <!-- https://en.wikipedia.org/wiki/Big_O_notation#Family_of_Bachmann%E2%80%93Landau_notations -->
         <!-- https://en.wikipedia.org/wiki/Big_O_notation#Family_of_Bachmann%E2%80%93Landau_notations -->
-                <!-- https://www.scottaaronson.com/papers/philos.pdf -->
-                <!-- https://complexityzoo.net/Complexity_Zoo -->
+        <!-- https://www.scottaaronson.com/papers/philos.pdf -->
+        <!-- https://complexityzoo.net/Complexity_Zoo -->
 
         <!-- connetion with importatn computer resources: -->
         <!-- - cpu <-> time complexity -->
@@ -241,41 +262,42 @@
       </section>
 
       <!-- <p> -->
-      <!-- Here's what we want to capture with \( \Omicron \) for a function \( f \) -->
+      <!-- Here's what we want to capture with \( \mathcal{O} \) for a function \( f \) -->
       <!-- rate of growth of \( f \) up to constant factors against its parameters. -->
       <!-- </p> -->
       <!-- <p> -->
       <!-- So, here's the definition. For function \( f: X \rightarrow Y \) for parameter set \( X \) equipped with a filter \( \mathcal{F} \) and normed space \( Y \), then: -->
-      <!-- \[ \Omicron_\mathcal{F}(f) = \{ g: X \rightarrow Y: \exists C > 0, \exists A \in \mathcal{F}, ||f(x)|| \leq C ||g(x)|| \forall x \in A \} \] -->
+      <!-- \[ \mathcal{O}_\mathcal{F}(f) = \{ g: X \rightarrow Y: \exists C > 0, \exists A \in \mathcal{F}, ||f(x)|| \leq C ||g(x)|| \forall x \in A \} \] -->
       <!-- <p> -->
       <!-- <p> -->
-      <!-- Thm. \( \Omicron \) forms an equivalence relation. -->
-      <!-- 1 ) \( \Omicron(f) = \Omicron(f) \) by taking the witness \( C = 1 \) and  any \( A \in \mathcal{F} \). -->
-      <!-- 2 ) \( \Omicron(f) = \Omicron(g) \) -->
+      <!-- Thm. \( \mathcal{O} \) forms an equivalence relation. -->
+      <!-- 1 ) \( \mathcal{O}(f) = \mathcal{O}(f) \) by taking the witness \( C = 1 \) and  any \( A \in \mathcal{F} \). -->
+      <!-- 2 ) \( \mathcal{O}(f) = \mathcal{O}(g) \) -->
       <!-- </p> -->
       <!-- <p> -->
       <!-- ...connection to programming via turing machines... -->
       <!-- </p> -->
       <!-- <p> -->
       <!-- The common notations used are: -->
-      <!-- - membership expressed with `is` or `=` where \( f \in \Omicron(g) \) is expressed with \( f = \Omicron(g) \) or \( f \) is \( \Omicron(g) \) -->
+      <!-- - membership expressed with `is` or `=` where \( f \in \mathcal{O}(g) \) is expressed with \( f = \mathcal{O}(g) \) or \( f \) is \( \mathcal{O}(g) \) -->
       <!-- </p> -->
       <!-- <p> -->
-      <!-- \( \Omicron \) began in analytical number theory when mathematicians needed a tidy way to talk about error terms and orders of growth. -->
+      <!-- \( \mathcal{O} \) began in analytical number theory when mathematicians needed a tidy way to talk about error terms and orders of growth. -->
       <!-- history... -->
       <!-- </p> -->
       <!-- <p> -->
-      <!-- It's important note that \( \Omicron \) and worst case analysis are *disjoint* concepts. -->
+      <!-- It's important note that \( \mathcal{O} \) and worst case analysis are *disjoint* concepts. -->
       <!-- Reference: https://www.bigocheatsheet.com/ -->
       <!-- </p> -->
 
-        <!-- https://www.reddit.com/r/math/comments/1oxvhz3/how_do_mathematicians_internalize_bigo_and/ -->
-        <!-- In Taylor expansions, Big O notation again talks about functions, but instead talks about their behaviour as the input gets closer to 0. In this case f is in O(g), if f vanishes at least as quickly as g -->
+      <!-- https://www.reddit.com/r/math/comments/1oxvhz3/how_do_mathematicians_internalize_bigo_and/ -->
+      <!-- In Taylor expansions, Big O notation again talks about functions, but instead talks about their behaviour as the input gets closer to 0. In this case f is in O(g), if f vanishes at least as quickly as g -->
 
-            <!-- in applications not how it is important to define what \( n \) is as that greatly affects the complexity e.g. in cryptography n is typically number of bits i.e. log of the input and in RL n could be state space or number of possible state variables -> curse of dimensionality -->
-            <!-- warn how just because you've brought a problem down from exponential to poly, it doesn't mean it solved e.g. take traditional ML optimization or RL DP formulation -->
+      <!-- in applications not how it is important to define what \( n \) is as that greatly affects the complexity e.g. in cryptography n is typically number of bits i.e. log of the input and in RL n could be state space or number of possible state variables -> curse of dimensionality -->
+      <!-- warn how just because you've brought a problem down from exponential to poly, it doesn't mean it solved e.g. take traditional ML optimization or RL DP formulation -->
 
-
+      <!-- aplication of big O to LLM -->
+      <!-- https://openreview.net/pdf?id=AS8SPTyBgw -->
     </article>
   </body>
 </html>
