@@ -86,36 +86,40 @@ textarea:not([rows]) {
   font-family: "Commit Mono";
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
   src:
-    url("./fonts/CommitMono-400-Regular.otf") format("opentype"),
-    url("./fonts/TTF/CommitMono-400-Regular.ttf") format("truetype");
+    url("./fonts/CommitMono-400-Regular.woff2") format("woff2"),
+    url("./fonts/CommitMono-400-Regular.otf") format("opentype");
 }
 
 @font-face {
   font-family: "Commit Mono";
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
   src:
-    url("./fonts/CommitMono-700-Regular.otf") format("opentype"),
-    url("./fonts/TTF/CommitMono-700-Regular.ttf") format("truetype");
+    url("./fonts/CommitMono-700-Regular.woff2") format("woff2"),
+    url("./fonts/CommitMono-700-Regular.otf") format("opentype");
 }
 
 @font-face {
   font-family: "Commit Mono";
   font-weight: 400;
   font-style: italic;
+  font-display: swap;
   src:
-    url("./fonts/CommitMono-400-Italic.otf") format("opentype"),
-    url("./fonts/TTF/CommitMono-400-Italic.ttf") format("truetype");
+    url("./fonts/CommitMono-400-Italic.woff2") format("woff2"),
+    url("./fonts/CommitMono-400-Italic.otf") format("opentype");
 }
 
 @font-face {
   font-family: "Commit Mono";
   font-weight: 700;
   font-style: italic;
+  font-display: swap;
   src:
-    url("./fonts/CommitMono-700-Italic.otf") format("opentype"),
-    url("./fonts/TTF/CommitMono-700-Italic.ttf") format("truetype");
+    url("./fonts/CommitMono-700-Italic.woff2") format("woff2"),
+    url("./fonts/CommitMono-700-Italic.otf") format("opentype");
 }
 
 @charset "UTF-8";
@@ -135,29 +139,29 @@ html {
 
 /* Inspired by Tuft CSS: https://github.com/edwardtufte/tufte-css */
 body {
-  width: 87.5%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 12.5%;
+  max-width: 59rem;
+  margin-left: 12.5%;
+  padding: 0 1.5rem;
   background-color: var(--bg-color);
   color: #111;
-  max-width: 1400px;
   counter-reset: sidenote-counter;
 }
 
 h1 {
-  font-weight: 400;
-  margin-top: 3rem;
-  margin-bottom: 0.5rem;
-  font-size: 3.2rem;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0.6rem;
+  font-size: 1.75rem;
   line-height: 1;
 }
 
 h2 {
-  font-weight: 400;
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-  font-size: 2.2rem;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #ddd;
   line-height: 1;
 }
 
@@ -193,7 +197,7 @@ p.subtitle {
 }
 
 article {
-  padding: 1rem 0rem;
+  padding: 2.5rem 0 3rem;
 }
 
 section {
@@ -206,12 +210,12 @@ dl,
 ol,
 ul {
   font-size: 1rem;
-  line-height: 1.4rem;
+  line-height: 1.5;
 }
 
 p {
-  margin-top: 1.4rem;
-  margin-bottom: 1.4rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   padding-right: 0;
   vertical-align: baseline;
 }
@@ -438,9 +442,8 @@ label.margin-toggle:not(.sidenote-number) {
 
 @media (max-width: 760px) {
   body {
-    width: 84%;
-    padding-left: 8%;
-    padding-right: 8%;
+    margin-left: 0;
+    padding: 0 1.25rem;
   }
 
   hr,
@@ -628,4 +631,59 @@ body {
   .proof {
     width: 100%;
   }
+}
+
+/* === Entry lists: title + authors on their own lines, [bracket] links after === */
+ul.entries {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0;
+}
+
+ul.entries > li + li {
+  margin-top: 1.15rem;
+}
+
+/* One-line entries don't need the gap a four-line entry does */
+ul.compact > li + li {
+  margin-top: 0.4rem;
+}
+
+.entries .title {
+  font-weight: 700;
+}
+
+/* Equal-contribution marks: raised and reduced like a paper byline */
+.entries sup {
+  font-size: 0.65rem;
+  line-height: 0;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.45em;
+}
+
+.entries .tag {
+  font-weight: 700;
+  font-style: normal;
+}
+
+.links a:link,
+.links a:visited {
+  color: #666;
+  text-decoration: none;
+}
+
+.links a:hover {
+  color: #111;
+  text-decoration: underline;
+}
+
+.links .pending {
+  color: #999;
+}
+
+/* The row of [email] [github] [linkedin] under the name */
+p.links {
+  margin-top: 0;
+  margin-bottom: 1.75rem;
 }
