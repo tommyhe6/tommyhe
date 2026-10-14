@@ -124,7 +124,13 @@ textarea:not([rows]) {
 
 @charset "UTF-8";
 :root {
+  /* One terminal row. Every vertical gap on the page is a whole number of these. */
+  --line: 1.5rem;
   --bg-color: #faf9f6;
+  --text: #111;
+  --text-dim: #666;
+  --text-faint: #999;
+  --rule: #ddd;
   --main: 70%;
   --side: 30%;
   --indent: 5%;
@@ -139,30 +145,34 @@ html {
 
 /* Inspired by Tuft CSS: https://github.com/edwardtufte/tufte-css */
 body {
-  max-width: 59rem;
-  margin-left: 12.5%;
-  padding: 0 1.5rem;
+  max-width: 98ch;
+  /* Indent on wide screens, given back to the column as the viewport narrows. */
+  margin-left: max(0px, min(12.5%, 100% - 98ch));
+  padding: 0 2ch;
+  line-height: var(--line);
   background-color: var(--bg-color);
-  color: #111;
+  color: var(--text);
   counter-reset: sidenote-counter;
 }
 
 h1 {
   font-weight: 700;
-  margin-top: 0;
-  margin-bottom: 0.6rem;
+  margin: 0;
   font-size: 1.75rem;
-  line-height: 1;
+  line-height: calc(var(--line) * 2);
 }
 
 h2 {
   font-weight: 700;
   font-size: 1rem;
-  margin-top: 2rem;
-  margin-bottom: 0.9rem;
-  padding-bottom: 0.35rem;
-  border-bottom: 1px solid #ddd;
-  line-height: 1;
+  margin: var(--line) 0 var(--line);
+  line-height: var(--line);
+  border-bottom: 1px solid var(--rule);
+}
+
+h2::before {
+  content: "## ";
+  color: var(--text-faint);
 }
 
 h3 {
@@ -197,7 +207,7 @@ p.subtitle {
 }
 
 article {
-  padding: 2.5rem 0 3rem;
+  padding: var(--line) 0 calc(var(--line) * 2);
 }
 
 section {
@@ -210,12 +220,12 @@ dl,
 ol,
 ul {
   font-size: 1rem;
-  line-height: 1.5;
+  line-height: var(--line);
 }
 
 p {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: var(--line);
+  margin-bottom: var(--line);
   padding-right: 0;
   vertical-align: baseline;
 }
@@ -441,9 +451,10 @@ label.margin-toggle:not(.sidenote-number) {
 }
 
 @media (max-width: 760px) {
-  body {
-    margin-left: 0;
-    padding: 0 1.25rem;
+  /* Vertical padding on an inline link grows the tap target without moving anything */
+  .links a {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 
   hr,
@@ -633,20 +644,31 @@ body {
   }
 }
 
+/* Square markers sitting in a two-cell gutter, after the-monospace-web */
+article > ul:not(.entries) {
+  list-style-type: square;
+  padding-left: 2ch;
+  margin: var(--line) 0;
+}
+
+article > ul:not(.entries) > li::marker {
+  line-height: 0;
+}
+
 /* === Entry lists: title + authors on their own lines, [bracket] links after === */
 ul.entries {
   list-style: none;
   padding-left: 0;
-  margin-top: 0;
+  margin: 0 0 var(--line);
 }
 
 ul.entries > li + li {
-  margin-top: 1.15rem;
+  margin-top: var(--line);
 }
 
-/* One-line entries don't need the gap a four-line entry does */
+/* One-line entries read as consecutive rows, like command output */
 ul.compact > li + li {
-  margin-top: 0.4rem;
+  margin-top: 0;
 }
 
 .entries .title {
@@ -669,21 +691,27 @@ ul.compact > li + li {
 
 .links a:link,
 .links a:visited {
-  color: #666;
+  color: var(--text-dim);
   text-decoration: none;
 }
 
 .links a:hover {
-  color: #111;
-  text-decoration: underline;
+  background: var(--text);
+  color: var(--bg-color);
+  text-decoration: none;
 }
 
 .links .pending {
-  color: #999;
+  color: var(--text-faint);
+}
+
+::selection {
+  background: var(--text);
+  color: var(--bg-color);
 }
 
 /* The row of [email] [github] [linkedin] under the name */
 p.links {
   margin-top: 0;
-  margin-bottom: 1.75rem;
+  margin-bottom: var(--line);
 }
