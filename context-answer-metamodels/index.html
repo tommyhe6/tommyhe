@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Context–Answer Metamodels</title>
+    <meta
+      name="description"
+      content="Forecast an LLM’s answer activations before it starts answering. Explore real context–answer metamodel forecasts, recorded rollouts, and the research behind them."
+    />
+    <link
+      rel="canonical"
+      href="https://tommyhe.com/context-answer-metamodels"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Context–Answer Metamodels" />
+    <meta
+      property="og:description"
+      content="Context–Answer Metamodels forecast an LLM’s answer activations from its context. Explore the forecasts, then reveal what actually happened."
+    />
+    <meta
+      property="og:url"
+      content="https://tommyhe.com/context-answer-metamodels"
+    />
+    <meta
+      property="og:image"
+      content="https://tommyhe.com/context-answer-metamodels/asset/social.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Context–Answer Metamodels. Blue activation forecasts and orange observed answers in a two-dimensional projection."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Context–Answer Metamodels" />
+    <meta
+      name="twitter:description"
+      content="Forecasting LLM activations from context. An interactive research demo."
+    />
+    <meta
+      name="twitter:image"
+      content="https://tommyhe.com/context-answer-metamodels/asset/social.png"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/png" sizes="64x64" href="../favicon-64.png" />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg?v=3" />
+    <link rel="stylesheet" href="./page.css" />
+    <script src="./data.js" defer></script>
+    <script src="./page.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <nav class="contents" aria-label="Article contents">
+      <p>Contents</p>
+      <a href="#main">Overview</a>
+      <a href="#explore">Interactive example</a>
+      <a href="#method">The metamodels</a>
+      <a href="#findings">Results</a>
+      <a href="#discussion">Discussion</a>
+      <a href="#acknowledgments">Acknowledgments</a>
+      <a href="#cite">Citation</a>
+    </nav>
+
+    <main id="main" class="article">
+      <header class="article-header">
+        <h1>
+          <span class="title-context">Context</span>–<span class="title-answer"
+            >Answer</span
+          >
+          Metamodels
+        </h1>
+        <p class="subtitle">
+          Forecasting LLM activations before the first answer token
+        </p>
+        <div class="authors">
+          <span>Tommy He<sup>1</sup></span
+          ><span>Thomas Jiralerspong<sup>2</sup></span>
+        </div>
+        <p class="affiliations">
+          <span class="affiliation">
+            <sup>1</sup>
+            <a href="https://tufalabs.ai/">
+              <img
+                class="tufa-logo"
+                src="./asset/tufa.svg"
+                width="1133"
+                height="1116"
+                alt=""
+              />
+              Tufa Labs
+            </a>
+          </span>
+          <span class="affiliation">
+            <sup>2</sup>
+            <a href="https://mila.quebec/en">
+              <img
+                class="mila-logo"
+                src="./asset/mila.svg"
+                width="170"
+                height="50"
+                alt="Mila"
+              />
+            </a>
+            <a href="https://www.umontreal.ca/">
+              <img
+                class="udem-logo"
+                src="./asset/udem.svg"
+                width="351"
+                height="134"
+                alt="Université de Montréal"
+              />
+            </a>
+          </span>
+        </p>
+        <p class="publication">NeurIPS 2026 NeuralArtifacts oral spotlight</p>
+        <div class="paper-links">
+          <div>
+            Paper:
+            <a href="https://arxiv.org/abs/2611.06837"
+              >https://arxiv.org/abs/2611.06837</a
+            >
+          </div>
+          <div>
+            Code:
+            <a href="https://github.com/Tufalabs/context-answer-metamodels"
+              >https://github.com/Tufalabs/context-answer-metamodels</a
+            >
+          </div>
+          <a href="#cite">BibTeX</a>
+        </div>
+      </header>
+
+      <figure class="wide-figure method-figure">
+        <div class="method-diagram">
+          <img
+            src="./asset/method.svg"
+            width="1260"
+            height="438"
+            alt="Context tokens pass through frozen Qwen to produce a context activation trace. A learned metamodel forecasts the mean or distribution of answer activations. Separately, stochastic decoding produces sampled answers whose mean-pooled activations provide training and evaluation targets."
+          />
+        </div>
+        <figcaption>
+          <strong>Forecasting a future activation distribution.</strong>
+          The metamodel receives context activations from a language model and
+          produces either a point forecast of the expected mean-pooled answer
+          activation (linear ridge or MLP) or a distribution forecast over
+          mean-pooled answer activations (Gaussian or flow). Multiple decoding
+          seeds provide training and evaluation targets.
+        </figcaption>
+      </figure>
+
+      <section class="abstract" aria-label="Abstract">
+        <p>
+          <strong>Abstract.</strong> Under stochastic decoding, a single context
+          can elicit many different answers from a language model.
+          Characterizing this variation typically requires many expensive
+          autoregressive rollouts, each revealing only one realization. We ask
+          whether the activations produced while reading the context can
+          directly forecast the model’s rollout activations. We train
+          <em>context–answer metamodels</em> that map a context activation
+          sequence to point or distribution forecasts of mean-pooled answer
+          activations. We find that (i) the four metamodel families we study
+          forecast mean-pooled answer activations with high fidelity, and the
+          distribution metamodels also capture rollout variability; (ii)
+          performance improves as the training set grows to 500,000 prompts, and
+          the metamodels generalize zero-shot to out-of-domain datasets; (iii)
+          their forecasts retain behavior-predictive signal; and (iv) context
+          activations from Qwen2.5 predict mean-pooled answer activations from
+          Qwen3.5 and Gemma 4, suggesting that activation forecasts can transfer
+          across models. Together, these results suggest that context activation
+          traces can support scalable forecasts of behaviors in LLM answers
+          before the first answer token is generated.
+        </p>
+      </section>
+
+      <section id="explore" aria-labelledby="explore-title">
+        <h2 id="explore-title">Exploring a forecast</h2>
+        <p>
+          Choose a prompt and a metamodel below. The forecast is available
+          before any answer is generated. Sample 16 rollouts and watch their
+          running mean activations evolve token by token against the forecast.
+        </p>
+        <figure class="wide-figure demo-figure">
+          <div id="explorer" aria-busy="true">
+            <div id="demo-loading" class="loading-message" role="status">
+              Loading recorded forecasts…
+            </div>
+            <div id="demo-content" hidden>
+              <div class="prompt-controls">
+                <label for="example-select">Prompt</label
+                ><select id="example-select"></select
+                ><button type="button" id="share-example" class="text-button">
+                  Copy link
+                </button>
+              </div>
+              <p id="prompt-text" class="prompt-text"></p>
+              <p id="prompt-meta" class="metadata"></p>
+              <div class="model-controls">
+                <div
+                  class="tabs"
+                  id="model-options"
+                  role="group"
+                  aria-label="Metamodel"
+                >
+                  <button
+                    type="button"
+                    data-family="linear"
+                    aria-pressed="false"
+                  >
+                    Linear ridge</button
+                  ><button type="button" data-family="mlp" aria-pressed="false">
+                    MLP</button
+                  ><button
+                    type="button"
+                    data-family="gaussian"
+                    aria-pressed="false"
+                  >
+                    Gaussian</button
+                  ><button type="button" data-family="flow" aria-pressed="true">
+                    Flow
+                  </button>
+                </div>
+                <span id="forecast-kind" class="metadata"
+                  >Distribution forecast</span
+                >
+              </div>
+              <div class="demo-layout">
+                <div class="plot-panel">
+                  <div class="plot-legend">
+                    <span class="legend-item"
+                      ><i class="dot forecast"></i>Forecast</span
+                    ><span class="legend-item"
+                      ><i class="dot observed"></i>Rollout mean</span
+                    >
+                  </div>
+                  <svg
+                    id="activation-plot"
+                    viewBox="0 0 640 410"
+                    role="group"
+                    aria-labelledby="activation-title activation-description"
+                  >
+                    <title id="activation-title">
+                      Forecast and observed answer activations
+                    </title>
+                    <desc id="activation-description">
+                      A two-dimensional projection of recorded activations.
+                    </desc>
+                  </svg>
+                  <p id="projection-note" class="metadata"></p>
+                </div>
+                <div class="answer-panel">
+                  <div class="answer-heading">
+                    <span>Rollouts</span><span id="reveal-count"></span>
+                  </div>
+                  <div
+                    id="rollout-options"
+                    class="rollout-options"
+                    role="group"
+                    aria-label="Choose a rollout"
+                  ></div>
+                  <div class="answer-meta">
+                    <span id="answer-label">Rollout 01</span>
+                    <span id="answer-progress"></span>
+                  </div>
+                  <div
+                    id="answer-reader"
+                    class="answer-reader"
+                    tabindex="0"
+                    role="region"
+                    aria-labelledby="answer-label"
+                  >
+                    <p id="answer-placeholder" class="answer-placeholder">
+                      Sample rollouts to see an answer.
+                    </p>
+                    <p id="answer-text" class="answer-full"></p>
+                  </div>
+                  <div class="replay-controls">
+                    <button type="button" id="play-replay" class="button">
+                      Sample rollouts</button
+                    ><button type="button" id="reveal-all" class="text-button">
+                      Show completed</button
+                    ><button
+                      type="button"
+                      id="reset-replay"
+                      class="text-button"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                  <div class="token-progress">
+                    <label for="token-progress"
+                      >Token <span id="token-count">0</span></label
+                    >
+                    <input
+                      id="token-progress"
+                      type="range"
+                      min="0"
+                      max="1"
+                      value="0"
+                      step="1"
+                      aria-label="Generated token position"
+                    />
+                  </div>
+                  <p id="replay-status" class="metadata" role="status">
+                    The forecast is ready. Sample rollouts to compare.
+                  </p>
+                </div>
+              </div>
+              <p id="family-explanation" class="figure-explanation"></p>
+            </div>
+          </div>
+          <figcaption>
+            <p>
+              Each orange point is a rollout’s mean activation over tokens
+              generated so far; its trail shows the path it has taken. Blue
+              forecasts stay fixed. Select a point to read its rollout, or drag
+              the token slider to explore.
+            </p>
+            <p id="demo-provenance"></p>
+            <p>
+              Two principal components show only a slice of the full activation
+              space.
+              <a href="https://github.com/Tufalabs/context-answer-metamodels"
+                >Code repository</a
+              >
+            </p>
+          </figcaption>
+        </figure>
+        <noscript
+          ><p>
+            The interactive example requires JavaScript. The explanation and
+            results below are available without it.
+          </p></noscript
+        >
+      </section>
+
+      <section id="method" aria-labelledby="method-title">
+        <h2 id="method-title">From context to answer</h2>
+        <p>
+          We train <em>context–answer metamodels</em> on context activation
+          traces and repeated answer activation traces from rollouts of a
+          language model. <em>Point</em> metamodels forecast the expectation of
+          the mean-pooled answer activation; <em>distribution</em> metamodels
+          forecast its rollout-induced distribution.
+        </p>
+        <p>
+          We train two point metamodels (linear ridge and MLP) and two
+          distribution metamodels (Gaussian and flow). We select the former by
+          validation R² and the latter by validation energy score. For inputs,
+          the linear ridge model takes the final context-token activation,
+          whereas the MLP and flow take a 32-bin context trace (the Gaussian
+          extends a frozen MLP).
+        </p>
+        <dl class="family-list">
+          <div>
+            <dt>Linear ridge</dt>
+            <dd>
+              We fit a full-dimensional linear map to empirical rollout means in
+              closed form, selecting the ridge penalty by validation R².
+            </dd>
+          </div>
+          <div>
+            <dt>MLP</dt>
+            <dd>
+              A three-layer GELU MLP minimizes MSE against each prompt’s
+              empirical mean over training rollouts. We select the final model
+              with the highest validation R².
+            </dd>
+          </div>
+          <div>
+            <dt>Gaussian</dt>
+            <dd>
+              This model extends a frozen MLP point map. Candidate covariances
+              are isotropic, diagonal, or low-rank-plus-diagonal. The scale is
+              global or prompt-dependent.
+            </dd>
+          </div>
+          <div>
+            <dt>Flow</dt>
+            <dd>
+              We use conditional flow matching with a linear path. At inference,
+              64 Gaussian base draws are integrated for 32 Euler steps. We
+              select the final model with the lowest validation energy score.
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section
+        id="findings"
+        class="result-section"
+        aria-labelledby="findings-title"
+      >
+        <h2 id="findings-title">
+          Context activation traces forecast answer activations at scale and
+          generalize OOD
+        </h2>
+        <p>
+          Our primary study uses decoder block 18 of Qwen3.5-9B. All layer
+          indices are zero-indexed and refer to raw decoder-block outputs.
+          LMSYS-Chat-1M provides 500,000/1,000/3,000 train/validation/test
+          prompts, each with four independently seeded rollouts.
+        </p>
+        <p>
+          The linear ridge metamodel initially outperforms the nonlinear MLP and
+          flow mean on all three evaluation sets, but the nonlinear models
+          overtake it as prompt coverage grows. The linear ridge curves then
+          plateau much earlier. At the largest scale, the flow mean approaches
+          the MLP on both OOD sets, with a modest gap in domain.
+        </p>
+        <figure class="wide-figure results-figure">
+          <div class="chart-image">
+            <img
+              src="./asset/scaling.svg"
+              width="507"
+              height="183"
+              loading="lazy"
+              alt="Three panels show mean R² versus LMSYS training prompts for LMSYS, WeirdChat, and IFEval. MLP and flow overtake linear ridge as the training set grows to 500,000 prompts."
+            />
+          </div>
+          <figcaption>
+            <strong
+              >Prompt coverage drives forecast quality through the largest
+              tested scale, in and out of domain.</strong
+            >
+            Columns correspond to evaluation sets and show mean R² for the
+            linear ridge, MLP, and flow metamodels. All metamodels are trained
+            only on LMSYS; WeirdChat (2,660 prompts) and IFEval (541 prompts)
+            are zero-shot, with four rollouts per prompt. The linear ridge
+            metamodel uses the final context-token activation and the neural
+            models use the 32-bin context trace.
+          </figcaption>
+        </figure>
+        <p>
+          The Gaussian has a slightly better LMSYS energy score and variance
+          ranking, whereas the flow has lower OOD energy scores. Increasing
+          prompt coverage is more valuable than adding repeated targets: eight
+          rollouts capture most of the gain from sixteen.
+        </p>
+      </section>
+
+      <section
+        id="behavior"
+        class="result-section"
+        aria-labelledby="behavior-title"
+      >
+        <h2 id="behavior-title">
+          Forecasted activations retain behavior-predictive signal
+        </h2>
+        <p>
+          We use linear behavior probes (logistic regression) trained on real
+          answer activations, applying them to predicted means or averaging
+          their predicted probabilities over Gaussian and flow samples. The MLP
+          mean improves on the direct-context baseline in all four groups,
+          although some gains are small. The Gaussian performs similarly to the
+          MLP on self-harm and deception, while the flow’s relative performance
+          varies by behavior.
+        </p>
+        <p class="research-note">
+          The behavior analysis uses separate mixed-domain metamodel fits and
+          labels from GPT-6 Luna. See the
+          <a href="https://arxiv.org/abs/2611.06837"
+            >paper’s behavior analysis</a
+          >
+          for the protocol and complementary metrics.
+        </p>
+        <figure class="wide-figure results-figure">
+          <div class="chart-image">
+            <img
+              src="./asset/behavior.svg"
+              width="507"
+              height="230"
+              loading="lazy"
+              alt="AUPRC on four held-out WeirdChat behavior groups, comparing direct-context predictions, linear ridge, MLP, Gaussian, flow, and actual-answer probes. Dashed lines show the positive-rollout base rates."
+            />
+          </div>
+          <figcaption>
+            <strong
+              >Forecasted activations retain behavior-predictive signal.</strong
+            >
+            Answer-level AUPRC on held-out WeirdChat prompts. Dashed segments
+            show each group’s positive-rollout base rate. The actual-answer
+            probe observes generated answers.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section
+        id="transfer"
+        class="result-section"
+        aria-labelledby="transfer-title"
+      >
+        <h2 id="transfer-title">
+          Qwen2.5 traces forecast Qwen3.5 and Gemma 4 answer activations
+        </h2>
+        <p>
+          Qwen2.5 conditioning yields slightly lower but comparable
+          mean-forecast accuracy to matched target-model conditioning on both
+          targets. This transfer spans architectural differences for Qwen3.5,
+          whose hybrid blocks differ from Qwen2.5’s conventional Transformer,
+          and, for Gemma 4, a different model family with its own tokenizer and
+          training pipeline.
+        </p>
+        <figure class="wide-figure results-figure">
+          <div class="chart-image">
+            <img
+              src="./asset/transfer.svg"
+              width="507"
+              height="273"
+              loading="lazy"
+              alt="Six panels compare mean R² using Qwen2.5 context activations with matched target-model context activations. Rows show Qwen3.5 and Gemma 4 targets; columns show linear ridge, MLP, and flow. Both conditioners improve with more training prompts."
+            />
+          </div>
+          <figcaption>
+            <strong
+              >Qwen2.5 traces preserve most of the forecast quality for Qwen3.5
+              and Gemma 4.</strong
+            >
+            Mean R² for linear ridge, MLP, and flow metamodels. Rows show target
+            models; curves compare Qwen2.5 and matched target-model
+            conditioning. Error bars show one standard deviation over three
+            rollout partitions (Qwen3.5) or three initialization replicates
+            (Gemma 4 MLP/flow); Gemma 4 linear ridge fits are deterministic.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="discussion" aria-labelledby="discussion-title">
+        <h2 id="discussion-title">Discussion</h2>
+        <p>
+          In our experiments, point and distribution context–answer metamodels
+          scale with prompt count, generalize out of domain, and retain
+          behavior-predictive signal. The MLP provides accurate mean forecasts
+          without modeling rollout variability. The Gaussian provides a useful
+          baseline for rollout variability, while the benefits of flow matching
+          depend on the target model and distributional property.
+        </p>
+        <p>
+          Future work could use activation forecasts for behavioral monitoring
+          and intervention, such as anticipating reward hacking. Forecasting
+          activation trajectories could capture behavior during generation,
+          while extending forecasts beyond the initial context could support
+          longer interactions and multi-agent settings. Larger, more diverse
+          datasets could broaden transfer across tasks and domains.
+        </p>
+      </section>
+
+      <section id="acknowledgments" aria-labelledby="acknowledgments-title">
+        <h2 id="acknowledgments-title">Acknowledgments</h2>
+        <p>
+          We thank Jerome Sieber for detailed feedback on the paper as well as
+          technical discussions. We additionally thank Stephen Lu and Jungyoon
+          Lee for technical discussions on flow-matching models.
+        </p>
+      </section>
+
+      <section
+        id="cite"
+        class="citation-section"
+        aria-labelledby="citation-title"
+      >
+        <h2 id="citation-title">Paper and code</h2>
+        <p>
+          <a href="https://arxiv.org/abs/2611.06837">Read the paper</a> for the
+          full methods, experiments, and limitations. The
+          <a href="https://github.com/Tufalabs/context-answer-metamodels"
+            >code and numerical results</a
+          >
+          are available on GitHub.
+        </p>
+        <details class="citation-details">
+          <summary>BibTeX</summary>
+          <button type="button" id="copy-citation" class="text-button">
+            Copy citation
+          </button>
+          <pre id="citation">
+@article{he2026contextanswer,
+  title = {Context--Answer Metamodels:
+    Forecasting LLM Activations Before
+    the First Answer Token},
+  author = {He, Tommy and Jiralerspong, Thomas},
+  journal = {arXiv preprint arXiv:2611.06837},
+  year = {2026}
+}</pre>
+        </details>
+      </section>
+      <footer class="article-footer">
+        <a href="#main">Back to top</a>
+      </footer>
+    </main>
+    <p id="copy-status" class="copy-status" role="status"></p>
+  </body>
+</html>

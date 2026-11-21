@@ -1,0 +1,65 @@
+# Context–Answer Metamodels project page
+
+The project lives in the top-level `context-answer-metamodels/` directory and follows this site's existing buildless HTML setup. `index.html` is the directory entry point; the intended address remains `https://tommyhe.com/context-answer-metamodels`.
+
+HTML, CSS, JavaScript, and the data-bundling script live at the project root. The `asset/` subdirectory holds recorded JSON data, provenance, and images. The page shares the site's existing favicon and font files.
+
+You can open `index.html` directly in a browser. Assets use relative paths, and the recorded data loads through a classic script so the demo does not depend on `fetch` access to local files.
+
+Alternatively, from the website root, preview over HTTP with:
+
+```sh
+python3 -m http.server 8765 --bind 127.0.0.1
+```
+
+Then open `http://localhost:8765/context-answer-metamodels/`. The server also redirects `/context-answer-metamodels` to the directory entry point. No build, package installation, API keys, or inference server is needed.
+
+## Demo
+
+`asset/demo.json` contains 14 curated public LMSYS test prompts, 16 recorded Qwen3.5-9B responses per prompt (seeds 43–58), and their projected mean answer activations: 224 observations in total. It includes ridge and MLP point forecasts and 64 samples each from Gaussian and flow forecasts. The two-component PCA was fitted on training answer activations and frozen before projection of test examples.
+
+The additional 12 observations per example come from the paper's supplementary 16-rollout LMSYS bank. Model revision, layer, template, generation settings, prompt/response hashes, activation spans, and source-shard hashes were checked. The original six examples and their token trajectories remain unchanged. Eight more held-out prompts cover arithmetic, a number pattern, poetry, a water-container puzzle, food, planets, SQL, and a short language edit. They use the same checkpoints, archived forecast bank, and PCA. Main quantitative results still use the paper's four primary rollout targets; the expanded demo does not recompute those results.
+
+“Sample rollouts” advances all 16 saved continuations together, one generated token per step. Text follows the exact token boundaries, and each orange point shows the running mean of that rollout's answer activations. Faint trails retain the full path so far, with the last 32 token positions drawn darker. Completed rollouts keep their trails and stay at their original archived endpoints while longer ones continue. The right panel has a 16-button rollout selector and one scrollable response reader. Clicking a point or rollout number switches the reader while sampling continues. Interacting with the reader or using keyboard focus to inspect the plot pauses playback. The reader follows newly generated text during playback; its text has no separate nested scrollbar. The token slider supports scrubbing. The page replays recorded research data at a presentation pace; it does not run inference or generate new observations.
+
+Each rollout button has one orange progress bar that fills from left to right in proportion to that rollout's generated tokens divided by its total token count. It starts empty and reaches full width when that rollout finishes, staying full while longer rollouts continue. Forecast values and the selected metamodel do not affect the bar. Buttons keep a neutral background, and the selected rollout has a dark outline. Tooltips and accessible labels include the current and total token counts.
+
+Forecasts are conditioned on the complete prompt and stay fixed in activation space. The view fits the rollout paths so far and all four forecast families; switching metamodels at the same token position keeps the axes unchanged. Both dimensions use the same scale. Running means need not approach the forecast monotonically.
+
+The default prompt is `arithmetic` (evaluate `y = 23x + 3` at `x = 6`), with flow selected. It was chosen after comparing all 14 recorded examples for an initially distant cloud and a close final overlap with both distribution forecasts, balanced against playback length: 214 tokens take about eight seconds. In this two-dimensional projection, the distance between the rollout and forecast means falls from 6.39 to 0.53 forecast RMS radii for Gaussian and from 11.12 to 0.55 for flow. Ljubljana has the lowest average normalized empirical energy distance across the Gaussian and flow forecasts, but its 1,107 tokens take about 33 seconds. This is a presentation choice; no forecast, response, or trajectory was changed. The projection and data notes appear directly in the figure caption.
+
+`asset/trajectories.json` contains the 224 token trajectories, decoded-text offsets, and source activation hashes. `export-trajectories.py` reads only the selected answer spans from the retained layer-18 tensors, computes cumulative float32 means, rounds them to bfloat16 like the study targets, and applies the original training-fitted PCA. It verifies prompt/response hashes and exact generated IDs, then checks each reconstructed endpoint against the existing demo (tolerance: 0.002 projected units; measured differences are recorded in provenance). Completion uses the original archived endpoint, including the paper's canonical assistant suffix. The slider counts generated tokens; the suffix is included in the completion frame. Text offsets use UTF-16 units for JavaScript and handle tokens ending partway through a UTF-8 character.
+
+The exporter runs in the research environment with PyTorch, safetensors, and tokenizers. Its required arguments are `--dataset-root` (the LMSYS collection directory), `--demo`, `--provenance`, `--projection`, `--tokenizer` (the exact model revision's `tokenizer.json`), and `--output`. No new model training or rollout generation is performed.
+
+All 16 France responses are identical. Their original GPU and added CPU projections differ by less than 0.001 projected units. Exact exported coordinates are retained without jitter. The plot has no overlap-count labels; every rollout remains available through the numbered selector.
+
+The recorded flow samples use the paper's 1,000-step visualization run. Main quantitative results use 32 Euler steps. Saved intermediate flow trajectories are included in the downloadable data but are not animated by the page: integration time must not be presented as generated-token time. Neither these curated examples nor a two-dimensional projection establishes benchmark performance or full-dimensional calibration.
+
+Ridge and MLP points were reconstructed from saved checkpoints. Independent NumPy and original-class PyTorch MLP inference agreed within 0.00001 projected units. Prompt and response hashes were checked against the source records. Public artifact hashes and export validation are in `asset/provenance.json`; internal filesystem paths are intentionally excluded.
+
+Shareable example URLs use `?prompt=feathers&model=flow#explore`. Prompt IDs are `dice`, `stirling`, `ljubljana`, `feathers`, `bayes`, `paris`, `arithmetic`, `pattern`, `river`, `water`, `breakfast`, `planets`, `sql`, and `adjective`. Model IDs are `linear`, `mlp`, `gaussian`, and `flow`.
+
+## Results and assets
+
+- The abstract is verbatim from the paper's `abstract.tex`, with HTML typography. Methods and results use manuscript excerpts with light edits to mathematical notation and paper-specific cross-references. Discussion uses the original “In our experiments…” and future-directions paragraphs, followed by the paper's acknowledgments.
+- `asset/method.svg`: the original method schematic extracted as vectors from page 2 of the local November 19, 2026 arXiv PDF. Figure shapes and font outlines are preserved; the page background, margins, surrounding prose, and caption are excluded. The original caption appears as accessible HTML. The diagram sits directly below the title and links, before the abstract, and scales to the available width.
+- `asset/scaling.svg`, `asset/behavior.svg`, and `asset/transfer.svg`: the paper's three main result figures, converted directly with `pdftocairo -svg` from `main_scaling_domain.pdf`, `main_probe_results.pdf`, and `main_cross_model_scaling.pdf`. Each result section contains one figure with its paper caption. These static charts work without JavaScript and scale proportionally to the available width.
+- `asset/results.json`: archived scaling rows from the public [paper result snapshot](https://github.com/Tufalabs/context-answer-metamodels/tree/master/results/paper), including its source SHA256.
+- `data.js`: browser bundle generated from `asset/demo.json` and `asset/trajectories.json`. Regenerate it after changing either source with `python3 context-answer-metamodels/build-data.py` from the website root. The JSON files remain the source of truth.
+- `page.js`: plain JavaScript for projections, replay, deep links, and clipboard controls. Research text is inserted with `textContent`. Direct-file previews share the public canonical URL and do not rewrite file history.
+- `page.css`: a white, serif article with a 760-pixel reading column, 18-pixel body text (17 pixels on small screens), wider figures, plain text links, and a small contents list on large screens. Body typography uses system serif fonts; citation code uses the site's existing local Commit Mono. Figure images preserve their intrinsic aspect ratios without forced minimum widths. The interactive plot's viewbox tracks its displayed width so labels remain readable on small screens.
+- `asset/social.svg` and `asset/social.png`: editable vector and 1200 × 630 social card. Points are the 64 flow samples and 16 recorded observations from the feathers/bricks example. Open Graph and Twitter metadata use the PNG.
+- `asset/tufa.svg`, `asset/mila.svg`, and `asset/udem.svg`: affiliation logos from the [Tufa site header](https://tufalabs.ai/), [Mila's official logo asset](https://mila.quebec/sites/default/themes/mila_v1/logo.svg), and the `.udem-logo-udem` SVG embedded in the [Université de Montréal site's stylesheet](https://www.umontreal.ca/typo3temp/udemlessc/lessphp_9477013ded911f281ce354ea476ce0ead34a363a.css?1769692499). The Tufa mark is a static snapshot with its default eye colors resolved and site-specific classes removed. Logos are served locally and link to the institutions' public homepages.
+
+The homepage links to the new project page. No third-party scripts, analytics, or remote inference calls are added.
+
+## Design references
+
+The user's references are [On Repulsive and Attractive Teachers](https://self-distillation.github.io/repulsive_attractive.html) and [Introducing Inkling 2 Mini](https://thinkingmachines.ai/news/inkling-2-mini/). Both use narrow reading columns, serif prose, white backgrounds, and figures within the article. This page follows that editorial structure with original markup and styling. The title and selected controls echo the plots' blue and terracotta palette. The title appears once on load. Reduced-motion preferences disable decorative effects; explicitly clicking “Sample rollouts” still advances token by token. “Show completed” skips to the final token.
+
+## Verification
+
+Verified JavaScript syntax, local HTTP asset responses, local references, the exact abstract, discussion and acknowledgments, data hashes, and the rendered method figure, main result figures, demo chart SVGs, and social PNG. Token-playback integration checks cover all 14 prompts and four metamodels, intermediate point positions, exact decoded text boundaries, all 224 completed answers, stable answer DOM during streaming, overlapping observations, pause/resume/reset, scrubbing, completion, point selection, shared links, citation copying, reduced motion, mobile plot geometry, and data-load failures. Intermediate and final chart frames were rendered and inspected. Result figures remain available when the demo data cannot load. Asset URLs also resolve against a direct-file URL, and direct-file interactions are covered by the DOM checks.
+
+Browser-based desktop/mobile visual QA was unavailable because the browser access host failed to start. DOM integration checks do not substitute for visual or real-browser verification. The page has not been deployed by this change.
