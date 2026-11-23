@@ -609,15 +609,6 @@ figcaption {
 figcaption p {
   margin: 0 0 10px;
 }
-summary {
-  font-family: var(--sans);
-  font-size: 14px;
-  line-height: 1.6;
-  cursor: pointer;
-}
-summary:hover {
-  color: #41698d;
-}
 .family-list {
   margin: 26px 0;
 }
@@ -658,14 +649,21 @@ summary:hover {
 .citation-section h2 {
   margin-top: 35px;
 }
-.citation-details {
+.citation-block {
   margin-top: 20px;
 }
-.citation-details .text-button {
+.citation-block h3 {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.citation-block .text-button {
   display: block;
   margin-top: 16px;
 }
-.citation-details pre {
+.citation-block pre {
   margin: 14px 0 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -814,7 +812,7 @@ summary:hover {
   .family-list dd {
     font-size: 16px;
   }
-  .citation-details pre {
+  .citation-block pre {
     font-size: 12px;
   }
 }
