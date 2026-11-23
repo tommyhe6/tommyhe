@@ -258,6 +258,9 @@ sup {
   margin-top: 0;
   margin-bottom: 28px;
 }
+.activation-figure {
+  margin-bottom: 36px;
+}
 .method-diagram img,
 .chart-image img {
   display: block;
